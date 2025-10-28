@@ -1,0 +1,23 @@
+### Create a new user - this one will only get a USER role by default
+POST localhost:7070/api/v1/auth/register/
+
+{
+    "username": "Valdemar",
+    "password": "pass12345"
+}
+
+### User
+POST http://localhost:7070/api/v1/auth/login/
+
+{
+    "username": "Valdemar",
+    "password": "pass12345"
+}
+
+### Admin
+POST http://localhost:7070/api/v1/auth/login/
+
+{
+    "username": "Admin",
+    "password": "pass12345"
+}

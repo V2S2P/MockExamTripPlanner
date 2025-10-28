@@ -1,0 +1,68 @@
+### Creating a trip
+POST http://localhost:7070/api/v1/trips
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IkFkbWluIiwiZXhwIjoxNzYxNjYyMzkzLCJyb2xlcyI6IkFkbWluIiwidXNlcm5hbWUiOiJBZG1pbiJ9.wVWDV7n0vbWYGZ1fkdJ13NkUyWPa26u0ZkypzR7x19s
+
+{
+  "name": "Fun in the Forest",
+  "startTime": "09:00",
+  "endTime": "20:00",
+  "longitude": 13.34,
+  "latitude": 76.78,
+  "price": 199.99,
+  "category": "FOREST",
+  "guideId": 2
+}
+
+### Get all trips
+GET http://localhost:7070/api/v1/trips
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY0NDYxLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.BOs_vq-6c0LSy-uh_nse8j9USIyX77w1V1VblWZ0On8
+
+### Get trip by id with packing
+GET http://localhost:7070/api/v1/trips/2/packing
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY1OTIzLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.1oz4qoDJNTy5fEOsZRhrwfAlzKJDwT_octCZ1I7jhgs
+
+### Get total packing weight for trip
+GET http://localhost:7070/api/v1/trips/2/packing/weight
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY1OTIzLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.1oz4qoDJNTy5fEOsZRhrwfAlzKJDwT_octCZ1I7jhgs
+
+### Get trip by id
+GET http://localhost:7070/api/v1/trips/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY1OTIzLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.1oz4qoDJNTy5fEOsZRhrwfAlzKJDwT_octCZ1I7jhgs
+
+### Update trip
+PUT http://localhost:7070/api/v1/trips/4
+Content-Type: application/json
+
+{
+  "name": "Forest Hunting",
+  "startTime": "09:00",
+  "endTime": "20:00",
+  "longitude": 13.34,
+  "latitude": 76.78,
+  "price": 199.99,
+  "category": "FOREST",
+  "guideId": 2
+}
+
+### Delete trip
+DELETE http://localhost:7070/api/v1/trips/4
+Content-Type: application/json
+
+### Link guide to trip
+PUT http://localhost:7070/api/v1/trips/3/guides/2
+Content-Type: application/json
+
+### Filter trips by Category (forest)
+GET http://localhost:7070/api/v1/trips?category=beach
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY0NDYxLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.BOs_vq-6c0LSy-uh_nse8j9USIyX77w1V1VblWZ0On8
+
+### Get total price by guide
+GET http://localhost:7070/api/v1/trips/guides/totalprice
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY0ODY1LCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.toMHRW65F1OZq1zgCc62PiMdBsLhfdHSUie1hn94OnA
