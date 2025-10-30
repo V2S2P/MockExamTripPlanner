@@ -9,6 +9,7 @@ import app.enums.Category;
 import app.exceptions.ApiException;
 import app.mappers.TripMapper;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 import java.util.Map;
@@ -75,8 +76,12 @@ public class TripService {
         return TripMapper.toDTO(updated);
     }
     public void delete(int id) {
-        boolean deleted = tripDAO.deleteById(id);
-        if (!deleted) {
+        try {
+            boolean deleted = tripDAO.deleteById(id);
+            if (!deleted) {
+                throw new ApiException(404, "Trip with Id: " + id + " does not exist");
+            }
+        }catch (NoResultException e){
             throw new ApiException(404, "Trip with Id: " + id + " does not exist");
         }
     }

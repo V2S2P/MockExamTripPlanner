@@ -4,6 +4,7 @@ import app.entities.Trip;
 import app.exceptions.ApiException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 
@@ -28,12 +29,14 @@ public class TripDAO implements IDAO<Trip,Integer> {
 
     @Override
     public Trip getById(int id) {
-        try(EntityManager em = emf.createEntityManager()){
+        try(EntityManager em = emf.createEntityManager()) {
             return em.createQuery("SELECT DISTINCT t FROM Trip t LEFT JOIN FETCH t.guide WHERE t.id = :id ",
-                    Trip.class)
+                            Trip.class)
                     .setParameter("id", id)
                     .getSingleResult();
-        }catch (Exception ex){
+        }catch (NoResultException ex){
+            throw new ApiException(404, "No Trip found with id: " + id);
+        } catch (Exception ex){
             throw new ApiException(500, "Error Getting Trip: " + ex.getMessage());
         }
     }

@@ -1,7 +1,7 @@
 ### Creating a trip
 POST http://localhost:7070/api/v1/trips
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IkFkbWluIiwiZXhwIjoxNzYxNjYyMzkzLCJyb2xlcyI6IkFkbWluIiwidXNlcm5hbWUiOiJBZG1pbiJ9.wVWDV7n0vbWYGZ1fkdJ13NkUyWPa26u0ZkypzR7x19s
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxODI3NDM1LCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.2QbyYTUPn6nhFPW-mhUZR32r3rQ_pSLC-pP4ZCE8sq4
 
 {
   "name": "Fun in the Forest",
@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6I
 ### Get all trips
 GET http://localhost:7070/api/v1/trips
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxNjY0NDYxLCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.BOs_vq-6c0LSy-uh_nse8j9USIyX77w1V1VblWZ0On8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiZXN0Y29kZS5kayIsInN1YiI6IlZhbGRlbWFyIiwiZXhwIjoxNzYxODI3NDM1LCJyb2xlcyI6IlVzZXIiLCJ1c2VybmFtZSI6IlZhbGRlbWFyIn0.2QbyYTUPn6nhFPW-mhUZR32r3rQ_pSLC-pP4ZCE8sq4
 
 ### Get trip by id with packing
 GET http://localhost:7070/api/v1/trips/2/packing

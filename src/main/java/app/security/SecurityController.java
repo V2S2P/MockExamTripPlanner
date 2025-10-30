@@ -89,22 +89,35 @@ public class SecurityController implements ISecurityController {
     // Ikke implementeret (her kunne man lave brugeroprettelse)
     @Override
     public Handler register() {
-        return (ctx) -> {
-            ObjectNode returnObject = objectMapper.createObjectNode();
+        return ctx -> {
+            var returnObject = objectMapper.createObjectNode();
             try {
                 UserDTO userInput = ctx.bodyAsClass(UserDTO.class);
+
+                // Create user
                 User created = securityDAO.createUser(userInput.getUsername(), userInput.getPassword());
 
-                String token = createToken(new UserDTO(created.getUserName(), Set.of("USER")));
+                // Ensure USER role exists
+                try { securityDAO.createRole("User"); } catch (Exception ignored) {}
+
+                // Assign role and get updated user with roles
+                User updatedUser = securityDAO.addUserRole(created.getUserName(), "User");
+
+                // Create JWT token
+                String token = createToken(new UserDTO(updatedUser.getUserName(), updatedUser.getRolesAsStrings()));
+
                 ctx.status(HttpStatus.CREATED).json(returnObject
                         .put("token", token)
-                        .put("username", created.getUserName()));
+                        .put("username", updatedUser.getUserName()));
+
             } catch (EntityExistsException e) {
-                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-                ctx.json(returnObject.put("msg", "User already exists"));
+                ctx.status(HttpStatus.UNPROCESSABLE_CONTENT)
+                        .json(returnObject.put("msg", "User already exists"));
             }
         };
     }
+
+
 
     /**
      * POPULATE HANDLER

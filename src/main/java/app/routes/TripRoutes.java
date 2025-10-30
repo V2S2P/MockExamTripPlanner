@@ -3,6 +3,7 @@ package app.routes;
 import app.controllers.TripController;
 import app.security.Roles;
 import app.services.TripService;
+import io.javalin.Javalin;
 import io.javalin.apibuilder.EndpointGroup;
 
 import static io.javalin.apibuilder.ApiBuilder.*;

@@ -32,6 +32,9 @@ public class GuideDAO implements IDAO<Guide,Integer> {
             em.getTransaction().begin();
             Guide guide = em.find(Guide.class, id);
             em.getTransaction().commit();
+            if (guide ==  null){
+                throw new ApiException(404, "Guide not found with id: " + id);
+            }
             return guide;
         }catch(Exception ex){
             throw new ApiException(500, "Error Getting Guide: " + ex.getMessage());
@@ -41,9 +44,14 @@ public class GuideDAO implements IDAO<Guide,Integer> {
     @Override
     public List<Guide> getAll() {
         try(EntityManager em = emf.createEntityManager()){
-            return em.createQuery("select g from Guide g",
+            em.getTransaction().begin();
+            List<Guide> guides = em.createQuery("select g from Guide g",
                     Guide.class)
                     .getResultList();
+            em.getTransaction().commit();
+            return guides;
+        }catch (Exception ex){
+            throw new ApiException(500, "Error Getting All Guides: " + ex.getMessage());
         }
     }
 
@@ -52,20 +60,24 @@ public class GuideDAO implements IDAO<Guide,Integer> {
         try(EntityManager em = emf.createEntityManager()){
             em.getTransaction().begin();
 
-            Guide existingGuide = em.find(Guide.class, id);
-            if(existingGuide ==  null){
-                throw new ApiException(500, "Error Updating Guide");
+            Guide existing = em.find(Guide.class, id);
+            if(existing == null){
+                throw new ApiException(404, "Guide not found with id: " + id);
             }
-            //Ensure correct id
-            existingGuide.setId(id);
 
-            Guide updatedGuide = em.merge(guide);
+            // Copy fields from incoming guide to managed entity
+            existing.setName(guide.getName());
+            existing.setEmail(guide.getEmail());
+            existing.setPhoneNumber(guide.getPhoneNumber());
+            existing.setYearsOfExperience(guide.getYearsOfExperience());
+
             em.getTransaction().commit();
-            return updatedGuide;
-        }catch (Exception ex){
+            return existing;
+        } catch (Exception ex){
             throw new ApiException(500, "Error Updating Guide: " + ex.getMessage());
         }
     }
+
     /*
     @Override
     public Guide update(int id, Guide guide) {

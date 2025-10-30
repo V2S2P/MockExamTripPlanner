@@ -19,6 +19,7 @@ public class TripController implements IController{
     @Override
     public Handler create() {
         return (Context ctx) -> {
+            System.out.println("User role in create trip: " + ctx.attribute("role"));
             TripDTO tripDTO = ctx.bodyAsClass(TripDTO.class);
             TripDTO newTripDTO = tripService.create(tripDTO);
             ctx.status(HttpStatus.CREATED).json(newTripDTO);
