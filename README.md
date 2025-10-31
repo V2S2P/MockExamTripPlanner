@@ -135,3 +135,82 @@ This helps keep Java objects consistent in memory but isn’t required for persi
 Perfect rule of thumb:
 > "If both sides can hold multiple references (Many-to-Many), add helpers.
 > If only one side has a list (One-to-Many), it’s optional."
+[RestAssured_Testing_Guide.md](https://github.com/user-attachments/files/23270467/RestAssured_Testing_Guide.md)
+
+# REST Assured Testing with Hamcrest
+
+## 🧩 What is REST Assured?
+**REST Assured** is a Java library used to test RESTful APIs. It simplifies sending HTTP requests and validating responses, making it ideal for **integration testing** in Java web applications.
+
+In this project, REST Assured is used to verify that endpoints for `/guides`, `/trips`, and `/packing` behave correctly — returning the right **status codes** and **JSON responses**.
+
+Example:
+```java
+given()
+    .header("Authorization", "Bearer " + userToken)
+    .when()
+    .get("/trips")
+    .then()
+    .statusCode(200)
+    .body("size()", greaterThanOrEqualTo(1));
+```
+
+This test sends a `GET /trips` request and checks that the response status is **200 OK** and that at least one trip exists.
+
+---
+
+## 🧩 What is Hamcrest?
+**Hamcrest** is a library for writing **readable and flexible assertions** in Java tests. It provides matchers like `equalTo`, `greaterThan`, `hasItems`, and `notNullValue`, which make test conditions expressive and easy to understand.
+
+Hamcrest is used inside REST Assured’s `.body()` and `.statusCode()` checks to make assertions clear and descriptive.
+
+Example:
+```java
+.body("name", equalTo("Alice Johnson"))
+.body("packingItems.name", hasItems("Tent", "Backpack"))
+.body("packingItems[0].weightInGrams", greaterThan(0));
+```
+
+Here, Hamcrest helps express that:
+- the trip name equals “Alice Johnson”
+- the packing list includes “Tent” and “Backpack”
+- each packing item has a positive weight
+
+---
+
+## ✅ Example: Mock API Testing
+The test mode in this project uses a **MockPackingService** instead of the real API to ensure consistent results:
+
+```java
+@Test
+void testPackingEndpoints() {
+    given()
+        .header("Authorization", "Bearer " + userToken)
+        .when()
+        .get("/trips/" + createdTripId + "/packing")
+        .then()
+        .statusCode(200)
+        .body("packingItems.size()", equalTo(2))
+        .body("packingItems.name", hasItems("Tent", "Backpack"));
+
+    given()
+        .header("Authorization", "Bearer " + userToken)
+        .when()
+        .get("/trips/" + createdTripId + "/packing/weight")
+        .then()
+        .statusCode(200)
+        .body(equalTo("3300"));
+}
+```
+
+This test verifies that the mock service returns two predictable items (`Tent`, `Backpack`) with a total weight of **3300 grams**.
+
+---
+
+## 💡 Why Use Them Together?
+Using **REST Assured** with **Hamcrest** allows for:
+- Fluent and human-readable tests
+- Reliable verification of JSON responses
+- Consistent regression testing of REST APIs
+
+Together, they ensure that your endpoints behave as expected and that future changes don’t break existing functionality.
