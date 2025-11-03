@@ -214,3 +214,151 @@ Using **REST Assured** with **Hamcrest** allows for:
 - Consistent regression testing of REST APIs
 
 Together, they ensure that your endpoints behave as expected and that future changes don’t break existing functionality.
+[ExceptionHandling_Readme.md](https://github.com/user-attachments/files/23308401/ExceptionHandling_Readme.md)# 🧩 Exception Handling Overview
+
+This document explains the purpose and usage of the custom exceptions used in the project.
+
+---
+
+## 🧠 Overview of Exceptions
+
+| Exception | Inherits from | Typical HTTP Code | Purpose |
+|------------|---------------|------------------|----------|
+| **`ApiException`** | `RuntimeException` | varies (400–500) | Generic catch-all for API-related errors; used to send standardized JSON errors. |
+| **`ValidationException`** | `RuntimeException` | `400 Bad Request` | Thrown when user input fails validation (e.g. missing fields, bad format). |
+| **`NotAuthorizedException`** | `RuntimeException` | `401 Unauthorized` or `403 Forbidden` | Thrown when user authentication/authorization fails. |
+| **`EntityNotFoundException`** | `Exception` | `404 Not Found` | Thrown when requested data (entity) doesn’t exist in the database. |
+
+---
+
+## 🔹 1. `ApiException`
+
+**Purpose:**  
+A general-purpose exception that lets you control both the HTTP status code and message returned to the client.
+
+**When to use:**  
+When you need to throw a meaningful error to the API client, with a specific status code and message.
+
+**Example:**
+```java
+if (customer == null) {
+    throw new ApiException(404, "Customer not found");
+}
+```
+
+**Handled by:**  
+Your global exception handler in `ApplicationConfig`:
+
+```java
+app.exception(ApiException.class, (e, ctx) -> {
+    ctx.status(e.getStatusCode()).json(Map.of(
+        "status", e.getStatusCode(),
+        "message", e.getMessage()
+    ));
+});
+```
+
+---
+
+## 🔹 2. `ValidationException`
+
+**Purpose:**  
+Used to indicate that the user’s input was invalid (HTTP 400).
+
+**When to use:**  
+When you’re validating input data and something doesn’t meet your criteria.
+
+**Example:**
+```java
+if (carDTO.getMaker() == null || carDTO.getMaker().isBlank()) {
+    throw new ValidationException("Car maker cannot be empty");
+}
+```
+
+**Best practice:**  
+Catch `ValidationException` inside your service or controller and wrap it in an `ApiException` with HTTP 400:
+
+```java
+catch (ValidationException e) {
+    throw new ApiException(400, e.getMessage());
+}
+```
+
+---
+
+## 🔹 3. `NotAuthorizedException`
+
+**Purpose:**  
+Signals that a user tried to perform an action they’re not allowed to do (401 or 403).
+
+**When to use:**  
+In authentication/authorization logic (like your `SecurityController` or protected service methods).
+
+**Example:**
+```java
+if (!user.hasRole(Roles.ADMIN)) {
+    throw new NotAuthorizedException(403, "Only admins can delete cars");
+}
+```
+
+**Handled by:**  
+Can have its own handler, or be wrapped into `ApiException`.
+
+```java
+app.exception(NotAuthorizedException.class, (e, ctx) -> {
+    ctx.status(e.getStatusCode()).json(Map.of(
+        "status", e.getStatusCode(),
+        "message", e.getMessage()
+    ));
+});
+```
+
+---
+
+## 🔹 4. `EntityNotFoundException`
+
+**Purpose:**  
+Thrown when something is requested from the database but doesn’t exist.  
+This is a checked exception, so it must be declared with `throws`.
+
+**Example:**
+```java
+public Car getById(int id) throws EntityNotFoundException {
+    Car car = em.find(Car.class, id);
+    if (car == null) {
+        throw new EntityNotFoundException("Car with id " + id + " not found");
+    }
+    return car;
+}
+```
+
+In the service layer:
+```java
+try {
+    return carDAO.getById(id);
+} catch (EntityNotFoundException e) {
+    throw new ApiException(404, e.getMessage());
+}
+```
+
+---
+
+## 🧭 Summary — When to Use What
+
+| Exception | Layer | Trigger Condition | Typical Handling |
+|------------|--------|------------------|------------------|
+| **`EntityNotFoundException`** | DAO | Database lookup fails | Caught in Service → wrap in `ApiException(404, msg)` |
+| **`ValidationException`** | Service / Controller | Invalid input | Caught in Service → wrap in `ApiException(400, msg)` |
+| **`NotAuthorizedException`** | Security / Controller | Unauthorized access | Global handler or wrap in `ApiException(403, msg)` |
+| **`ApiException`** | Any layer | General API error | Handled globally (directly returned as JSON) |
+
+---
+
+## 🧠 Best Practice Tip
+
+If you want a *single* consistent flow, you can choose to throw only `ApiException` from your service layer and use the other three internally — always wrapped into `ApiException`.
+
+✅ Clean, predictable JSON responses  
+✅ No try/catch clutter in controllers  
+✅ Semantic clarity in your internal logic
+
